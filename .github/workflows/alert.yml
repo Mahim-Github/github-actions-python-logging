@@ -1,5 +1,5 @@
 
-name: Send Failure Email
+name: Send Failure Email 
 
 on:
   workflow_run:
