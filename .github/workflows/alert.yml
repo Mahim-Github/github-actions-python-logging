@@ -1,4 +1,5 @@
-name: Send Failure Email
+name: Send Failure or Success Email
+
 on:
   workflow_run:
     workflows: ["Python CI with Logging"]
@@ -8,19 +9,21 @@ on:
       - main
 
 jobs:
-  notify-on-failure:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+  notify:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send failure email
+      - name: Check and send appropriate email
+        if: always()  # Always run this step after workflow completion
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 465
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "Python CI Failed"
+          subject: ${{ github.event.workflow_run.conclusion == 'failure' && 'Python CI Failed' || 'Python CI Passed' }}
           to: msstyles141@gmail.com
           from: GitHub Actions
-          body: "The Python CI workflow failed. View logs at: ${{ github.event.workflow_run.html_url }}"
+          body: |
+            The Python CI workflow has completed with status: ${{ github.event.workflow_run.conclusion }}.
+            View the workflow logs here: ${{ github.event.workflow_run.html_url }}
