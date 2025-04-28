@@ -4,6 +4,8 @@ on:
     workflows: ["Python CI with Logging"]
     types:
       - completed
+    branches:
+      - main
 
 jobs:
   notify-on-failure:
